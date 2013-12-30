@@ -1,8 +1,8 @@
 #ifndef LAZYSNAPPING_H
 #define LAZYSNAPPING_H
 
-#include <opencv2/highgui/highgui.hpp>
 #include "gmm.h"
+#include <opencv2/highgui/highgui.hpp>
 #include "maxflow-v3.01/graph.h"
 
 using namespace cv;
@@ -152,10 +152,6 @@ void calcNWeights(const Mat& img, Mat& leftW, Mat& upleftW, Mat& upW,
 void constructGCGraph(const Mat& img, const Mat& mask, const GMM& bgdGMM,
         const GMM& fgdGMM, double lambda, const Mat& leftW, const Mat& upleftW,
         const Mat& upW, const Mat& uprightW, GraphType* graph) {
-    int vtxCount = img.cols * img.rows,
-        edgeCount = 2 * (4 * img.cols * img.rows - 3 * (img.cols + img.rows) + 2);
-    graph = new GraphType(vtxCount, edgeCount);
-
     Point p;
     int vtxIdx=0;
     for (p.y = 0; p.y < img.rows; p.y++) {
@@ -240,10 +236,15 @@ void lazySnapping(const Mat& img, Mat& mask, Mat& bgdModel,
 
     GraphType* graph = NULL;
 
+    int vtxCount = img.cols * img.rows,
+        edgeCount = 2 * (4 * img.cols * img.rows - 3 * (img.cols + img.rows) + 2);
+    graph = new GraphType(vtxCount, edgeCount);
+
     constructGCGraph(img, mask, bgdGMM, fgdGMM, lambda, leftW, upleftW, upW,
                      uprightW, graph);
 
     estimateSegmentation(graph, mask);
+
 
     if(graph){
         delete graph;

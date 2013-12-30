@@ -23,6 +23,7 @@ int main()
     lsapp.setImageAndWinName(image, winName);
     lsapp.showImage();
 
+
     for(;;)
     {
         int c = cvWaitKey(0);

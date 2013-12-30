@@ -8,8 +8,12 @@
 
 using namespace cv;
 
+#define UN_KNOWN 5
+
 const Scalar RED = Scalar(0, 0, 255);
+const Scalar PINK = Scalar(230, 130, 255);
 const Scalar BLUE = Scalar(255, 0, 0);
+const Scalar LIGHTBLUE = Scalar(255, 255, 160);
 
 class LSApplication{
 public:
@@ -43,7 +47,7 @@ private:
 void LSApplication::reset()
 {
     if( !mask.empty() )
-        mask.setTo(Scalar::all(-1));
+        mask.setTo(Scalar::all(UN_KNOWN));
     bgdPxls.clear(); fgdPxls.clear();
 
     isInitialized = false;
@@ -68,6 +72,22 @@ void LSApplication::showImage() const
     Mat res;
 
     image->copyTo(res);
+
+    Point p;
+    for(p.y=0; p.y<res.rows; p.y++)
+    {
+        for(p.x=0; p.x<res.cols; p.x++)
+        {
+            if(mask.at<uchar>(p) == GC_PR_FGD)
+            {
+                circle(res, p, radius, PINK, thickness);
+            }
+            else if(mask.at<uchar>(p) == GC_PR_BGD)
+            {
+                circle(res, p, radius, LIGHTBLUE, thickness);
+            }
+        }
+    }
 
     vector<Point>::const_iterator it;
     for (it = bgdPxls.begin(); it != bgdPxls.end(); ++it)
@@ -118,7 +138,7 @@ void LSApplication::mouseClick( int event, int x, int y, int flags, void* )
             setLblsInMask(flags, Point(x,y));
             lblsState = SET;
             lazySnapping(*image, mask, bgdModel, fgdModel);
-            showImage();      
+            showImage();
         }
         break;
     case CV_EVENT_MOUSEMOVE:
