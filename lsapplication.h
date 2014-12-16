@@ -71,24 +71,25 @@ void LSApplication::showImage() const
 
     Mat res;
 
-    image->copyTo(res);
+    Mat binMask = mask & 1;
+    image->copyTo(res, binMask);
 
-    Point p;
-    for(p.y=0; p.y<res.rows; p.y++)
-    {
-        for(p.x=0; p.x<res.cols; p.x++)
-        {
-            if(mask.at<uchar>(p) == GC_PR_FGD)
-            {
-                circle(res, p, radius, PINK, thickness);
-            }
-            else if(mask.at<uchar>(p) == GC_PR_BGD)
-            {
-                circle(res, p, radius, LIGHTBLUE, thickness);
-            }
-        }
-    }
-
+//    Point p;
+//    for(p.y=0; p.y<res.rows; p.y++)
+//    {
+//        for(p.x=0; p.x<res.cols; p.x++)
+//        {
+//            if(mask.at<uchar>(p) == GC_PR_FGD)
+//            {
+//                circle(res, p, radius, PINK, thickness);
+//            }
+//            else if(mask.at<uchar>(p) == GC_PR_BGD)
+//            {
+//                circle(res, p, radius, LIGHTBLUE, thickness);
+//            }
+//        }
+//    }
+//
     vector<Point>::const_iterator it;
     for (it = bgdPxls.begin(); it != bgdPxls.end(); ++it)
         circle(res, *it, radius, BLUE, thickness);
